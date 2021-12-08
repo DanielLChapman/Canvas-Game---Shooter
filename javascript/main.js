@@ -5,6 +5,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 message.style.display = "none";
+
+let BLOCK_WIDTH = 35;
 let resize = false;
 let balls = [];
 
@@ -26,8 +28,8 @@ class Board {
     }
 
     checkWidthAndHeight() {
-        this.width = Math.floor(this.width / 35) * 35;
-        this.height = Math.floor(this.height / 35) * 35;
+        this.width = Math.floor(this.width /BLOCK_WIDTH ) * BLOCK_WIDTH;
+        this.height = Math.floor(this.height / BLOCK_WIDTH) * BLOCK_WIDTH;
     }
 
     draw() {
@@ -112,6 +114,12 @@ class Player {
         this.numShots = 1;
         this.fire = false;
         this.last = 0;
+        this.numBlocks = 0;
+        this.canPlay = true;
+    }
+
+    eliminate() {
+        this.canPlay = false;
     }
 
     shoot() {
@@ -161,18 +169,21 @@ class Player {
     }
 
     randomizeShots = () => {
-        if (this.numShots === 0) {
-            this.numShots = 1;
+        if (!this.fire) {
+            if (this.numShots === 0) {
+                this.numShots = 1;
+            }
+    
+            let x = Math.floor( Math.random() * 3);
+            if ( x === 0) {
+                this.numShots *= 4;
+            } else if (x === 2) {
+                this.numShots +=2;
+            } else {
+                this.fire = true;
+            }
         }
-
-        let x = Math.floor( Math.random() * 3);
-        if ( x === 0) {
-            this.numShots *= 2;
-        } else if (x === 2) {
-            this.numShots +=1;
-        } else {
-            this.fire = true;
-        }
+        
     
         
     }
@@ -230,27 +241,40 @@ class Block {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.width = 35;
-        this.height = 35;
+        this.width = BLOCK_WIDTH;
+        this.height = BLOCK_WIDTH;
     }
 
     testHit(color, ballX, ballY) {
 
         //if the colors are the same, ignore colision
-        if (color === this.color) {
-            return false;
-        } else {
-            if (
-                (ballX+2.5 >= this.x &&
-                ballX+2.5 <= this.x + this.width) &&
-                (ballY+2.5 >= this.y &&
-                ballY+2.5 <= this.y + this.height)
-            ) {
-                this.color = color;
-                return true;
+        if (
+            (ballX+2.5 >= this.x &&
+            ballX+2.5 <= this.x + this.width) &&
+            (ballY+2.5 >= this.y &&
+            ballY+2.5 <= this.y + this.height)
+        ) {
+            if (color === this.color) {
+                return {inBox: true, differentColor: false};
             }
+            
+            let oldColor = this.color;
+            this.color = color;
+            players.forEach((x) => {
+                if (oldColor === x.shooterColor) {
+                    x.numBlocks -= 1;
+                }
+                if (color === x.shooterColor) {
+                    x.numBlocks += 1;
+                }
+                if (x.numBlocks === 0) {
+                    x.eliminate();
+                }
+            })
+            
+            return {inBox: true, differentColor: true};
         }
-        return false;
+        return {inBox: false, differentColor: false};
     }
 
     draw() {
@@ -258,7 +282,7 @@ class Block {
         ctx.fillStyle = this.color;
         ctx.strokeStyle = "#000";
         ctx.lineWidth = 2;
-        ctx.rect(this.x, this.y, 35, 35);
+        ctx.rect(this.x, this.y, BLOCK_WIDTH, BLOCK_WIDTH);
         ctx.fill();
 
         ctx.stroke();
@@ -287,9 +311,13 @@ let blocks = [];
 
 
 function calculateNumOfBlocks() {
+    players.forEach((x) => {
+        x.canPlay = true;
+        x.numBlocks = 0;
+    })
     blocks = [];
-    let width = PlayBoard.width / 35;
-    let height = PlayBoard.height / 35;
+    let width = PlayBoard.width / BLOCK_WIDTH;
+    let height = PlayBoard.height / BLOCK_WIDTH;
     let totalAmount = width * height;
 
     let blockX = PlayBoard.x;
@@ -297,29 +325,33 @@ function calculateNumOfBlocks() {
     let tempBlock;
     for (let x = 0; x < totalAmount; x++) {
         //color switching
-        if (blockX < (width / 2) * 35 + PlayBoard.x) {
+        if (blockX < (width / 2) * BLOCK_WIDTH + PlayBoard.x) {
             //((PlayBoard.width / 2)+ PlayBoard.x - 19)) {
             if (blockY <= (PlayBoard.height + PlayBoard.y) / 2) {
                 //player 1 green
                 tempBlock = new Block(blockX, blockY, Player1.shooterColor);
+                Player1.numBlocks += 1;
             } else {
                 //player 3 yellow
                 tempBlock = new Block(blockX, blockY, Player3.shooterColor);
+                Player3.numBlocks += 1;
             }
         } else {
             if (blockY <= (PlayBoard.height + PlayBoard.y) / 2) {
                 //player 2 red
                 tempBlock = new Block(blockX, blockY, Player2.shooterColor);
+                Player2.numBlocks += 1;
             } else {
                 //player 4 purple
                 tempBlock = new Block(blockX, blockY, Player4.shooterColor);
+                Player4.numBlocks += 1;
             }
         }
-        blockX = blockX + 35;
+        blockX = blockX + BLOCK_WIDTH;
 
-        if (blockX + 35 >= PlayBoard.width + PlayBoard.x + 19) {
+        if (blockX + BLOCK_WIDTH >= PlayBoard.width + PlayBoard.x + 19) {
             blockX = PlayBoard.x;
-            blockY += 35;
+            blockY += BLOCK_WIDTH;
         }
 
         blocks.push(tempBlock);
@@ -353,21 +385,24 @@ function animation(now) {
         x.draw();
     });
     players.forEach((x) => {
-        x.drawShooter();
+        if (x.canPlay) {
+            x.drawShooter();
+        }
+        
     });
     
 
     if(!last || now - last >= 250) {
         last = now;
         players.forEach((x) => {
-            if (!x.fire) {
+            if (!x.fire && x.canPlay) {
                 x.randomizeShots();
             }
             
         })
     };
     players.forEach((x) => {
-        if (x.fire) {
+        if (x.fire && x.canPlay) {
             if(!x.last || now - x.last >= 100) {
                 x.last = now;
                 x.shoot();
@@ -384,16 +419,22 @@ function animation(now) {
             if (counterLeft > counterRight) {
                 //final test
                 let q = blocks[counterLeft].testHit(x.color, x.x, x.y);
-                if (q) {
-                    balls.splice(inc1, 1);
+                if (q.inBox) {
+                    stopBool = true;
+                    if (q.differentColor) {
+                        balls.splice(inc1, 1);
+                    }
+                    
                 }
-                stopBool = true;
+                
             } else {
                 let q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
                 let q2 = blocks[counterRight].testHit(x.color, x.x, x.y);
-                if (q1 || q2) {
+                if (q1.inBox || q2.inBox) {
                     stopBool = true;
-                    balls.splice(inc1, 1);
+                    if (q1.differentColor || q2.differentColor) {
+                        balls.splice(inc1, 1);
+                    }
                 }
             }
 
