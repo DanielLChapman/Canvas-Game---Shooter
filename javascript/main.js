@@ -26,8 +26,8 @@ class Board {
     }
 
     checkWidthAndHeight() {
-        this.width = Math.floor(this.width / 40) * 40;
-        this.height = Math.floor(this.height / 40) * 40;
+        this.width = Math.floor(this.width / 35) * 35;
+        this.height = Math.floor(this.height / 35) * 35;
     }
 
     draw() {
@@ -35,6 +35,7 @@ class Board {
             this.updateSize();
             this.checkWidthAndHeight();
             this.needToResetBoard = true;
+
             resize = false;
         }
 
@@ -120,7 +121,7 @@ class Player {
             if (this.numShots === 0) {
                 this.fire = false;
             }
-            let shot = new Ball(this.lineToX, this.lineToY, calculateWidth(60, this.degrees)/32, calculateHeight(60, this.degrees)/32, this.shooterColor);
+            let shot = new Ball(this.lineToX, this.lineToY, calculateWidth(60, this.degrees)/22, calculateHeight(60, this.degrees)/22, this.shooterColor);
             balls.push(shot);
         }
     }
@@ -164,7 +165,7 @@ class Player {
             this.numShots = 1;
         }
 
-        let x = Math.floor( Math.random() * 5);
+        let x = Math.floor( Math.random() * 3);
         if ( x === 0) {
             this.numShots *= 2;
         } else if (x === 2) {
@@ -181,40 +182,40 @@ class Player {
             this.x = 0;
             this.y = 0;
             this.shooterColor = "green";
-            this.startPosition = 89;
-            this.degrees = 89;
+            this.startPosition = 89.5;
+            this.degrees = 89.5;
            
-            this.maxDegreesChange = 1;
+            this.maxDegreesChange = 0.5;
             this.progression = -1;
         }
         if (count === 2) {
             this.x = canvas.width - this.width;
             this.y = 0;
             this.shooterColor = "red";
-            this.startPosition = -181;
-            this.degrees = -181;
+            this.startPosition = -179.5;
+            this.degrees = -179.5;
            
-            this.maxDegreesChange = -269;
+            this.maxDegreesChange = -269.5;
             this.progression = -1;
         }
         if (count === 3) {
             this.x = 0;
             this.y = canvas.height - this.height;
             this.shooterColor = "yellow";
-            this.startPosition = -1;
-            this.degrees = -1;
+            this.startPosition = -0.5;
+            this.degrees = -0.5;
            
-            this.maxDegreesChange = -89;
+            this.maxDegreesChange = -89.5;
             this.progression = -1;
         }
         if (count === 4) {
             this.x = canvas.width - this.width;
             this.y = canvas.height - this.height;
             this.shooterColor = "purple";
-            this.startPosition = -91;
-            this.degrees = -91;
+            this.startPosition = -89.5;
+            this.degrees = -89.5;
            
-            this.maxDegreesChange = -179;
+            this.maxDegreesChange = -179.5;
             this.progression = -1;
         }
     };
@@ -229,8 +230,8 @@ class Block {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.width = 40;
-        this.height = 40;
+        this.width = 35;
+        this.height = 35;
     }
 
     testHit(color, ballX, ballY) {
@@ -257,7 +258,7 @@ class Block {
         ctx.fillStyle = this.color;
         ctx.strokeStyle = "#000";
         ctx.lineWidth = 2;
-        ctx.rect(this.x, this.y, 40, 40);
+        ctx.rect(this.x, this.y, 35, 35);
         ctx.fill();
 
         ctx.stroke();
@@ -287,8 +288,8 @@ let blocks = [];
 
 function calculateNumOfBlocks() {
     blocks = [];
-    let width = PlayBoard.width / 40;
-    let height = PlayBoard.height / 40;
+    let width = PlayBoard.width / 35;
+    let height = PlayBoard.height / 35;
     let totalAmount = width * height;
 
     let blockX = PlayBoard.x;
@@ -296,7 +297,7 @@ function calculateNumOfBlocks() {
     let tempBlock;
     for (let x = 0; x < totalAmount; x++) {
         //color switching
-        if (blockX < (width / 2) * 40 + PlayBoard.x) {
+        if (blockX < (width / 2) * 35 + PlayBoard.x) {
             //((PlayBoard.width / 2)+ PlayBoard.x - 19)) {
             if (blockY <= (PlayBoard.height + PlayBoard.y) / 2) {
                 //player 1 green
@@ -314,16 +315,29 @@ function calculateNumOfBlocks() {
                 tempBlock = new Block(blockX, blockY, Player4.shooterColor);
             }
         }
-        blockX = blockX + 40;
+        blockX = blockX + 35;
 
-        if (blockX + 40 >= PlayBoard.width + PlayBoard.x + 19) {
+        if (blockX + 35 >= PlayBoard.width + PlayBoard.x + 19) {
             blockX = PlayBoard.x;
-            blockY += 40;
+            blockY += 35;
         }
 
         blocks.push(tempBlock);
     }
 }
+
+function checkIfBallsGotResizedOut() {
+    balls.forEach((x, inc) => {
+        if (x.x < canvas.x || x.x > canvas.x + canvas.width) {
+            balls.splice(inc, 1);
+        }
+        else if (x.y < canvas.y || x.y > canvas.y + canvas.height) {
+            balls.splice(inc, 1);
+        }
+    })
+}
+
+
 var last = 0;
 
 
@@ -333,6 +347,7 @@ function animation(now) {
     if (PlayBoard.needToResetBoard) {
         calculateNumOfBlocks();
         PlayBoard.needToResetBoard = false;
+
     }
     blocks.forEach((x) => {
         x.draw();
@@ -340,19 +355,20 @@ function animation(now) {
     players.forEach((x) => {
         x.drawShooter();
     });
-    setTimeout(() => {
-        window.requestAnimationFrame(animation);
-    }, 50);
+    
 
-    if(!last || now - last >= 1000) {
+    if(!last || now - last >= 250) {
         last = now;
         players.forEach((x) => {
-            x.randomizeShots();
+            if (!x.fire) {
+                x.randomizeShots();
+            }
+            
         })
     };
     players.forEach((x) => {
         if (x.fire) {
-            if(!x.last || now - x.last >= 500) {
+            if(!x.last || now - x.last >= 100) {
                 x.last = now;
                 x.shoot();
             };
@@ -361,15 +377,42 @@ function animation(now) {
     balls.forEach((x, inc1) => {
         x.update();
         x.draw();
+        let stopBool = false;
+        let counterLeft = 0; 
+        let counterRight = blocks.length - 1;
+        while (!stopBool) {
+            if (counterLeft > counterRight) {
+                //final test
+                let q = blocks[counterLeft].testHit(x.color, x.x, x.y);
+                if (q) {
+                    balls.splice(inc1, 1);
+                }
+                stopBool = true;
+            } else {
+                let q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
+                let q2 = blocks[counterRight].testHit(x.color, x.x, x.y);
+                if (q1 || q2) {
+                    stopBool = true;
+                    balls.splice(inc1, 1);
+                }
+            }
+
+            counterLeft+=1;
+            counterRight-=1;
+        }
+        /*
         blocks.forEach((y, inc2) => {
+            //maybe pointers on each end to move towards instead of forEach?
             let q = y.testHit(x.color, x.x, x.y);
             if (q) {
                 balls.splice(inc1, 1);
             }
-        })
+        })*/
     });
 
-
+    setTimeout(() => {
+        window.requestAnimationFrame(animation);
+    }, 0);
 
 }
 animation();
