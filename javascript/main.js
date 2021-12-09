@@ -171,30 +171,18 @@ function animation(now) {
         let counterLeft = 0; 
         let counterRight = blocks.length - 1;
         while (!stopBool) {
-            if (counterLeft > counterRight) {
-                //final test
                 try {
-                    let q = blocks[counterLeft].testHit(x.color, x.x, x.y);
-                    if (q.inBox) {
-                        stopBool = true;
-                        if (q.differentColor) {
-                            balls.splice(inc1, 1);
-                        }
-                        
+                    let q1, q2;
+                    if (x.shooterColor === 'green' || x.shooterColor === 'red') {
+                        q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
+                    } else {
+                        q2 = blocks[counterRight].testHit(x.color, x.x, x.y);
                     }
-                } catch (error) {
-                    //balls.splice(inc1, 1);
-                    stopBool = true;
-                }
-                
-                
-            } else {
-                try {
-                    let q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
-                    let q2 = blocks[counterRight].testHit(x.color, x.x, x.y);
-                    if (q1.inBox || q2.inBox) {
+                    
+                    
+                    if ((q1 && q1?.inBox) || (q2 && q2?.inBox)) {
                         stopBool = true;
-                        if (q1.differentColor || q2.differentColor) {
+                        if (q1?.differentColor || q2?.differentColor) {
                             balls.splice(inc1, 1);
                         }
                     }
@@ -203,7 +191,7 @@ function animation(now) {
                     stopBool = true;
                 }
                 
-            }
+
 
             counterLeft+=1;
             counterRight-=1;
