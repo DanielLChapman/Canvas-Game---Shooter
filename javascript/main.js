@@ -17,7 +17,6 @@ let balls = [];
 const PlayBoard = new Board(PLAYER_WIDTH);
 PlayBoard.checkWidthAndHeight();
 
-
 const Player1 = new Player();
 Player1.setPlayer(1);
 
@@ -32,7 +31,6 @@ Player4.setPlayer(4);
 
 const players = [Player1, Player2, Player3, Player4];
 
-
 window.addEventListener("resize", (e) => {
     resize = true;
     canvas.width = window.innerWidth;
@@ -46,15 +44,13 @@ window.addEventListener("resize", (e) => {
     }
 });
 
-
 let blocks = [];
-
 
 function calculateNumOfBlocks() {
     players.forEach((x) => {
         x.canPlay = true;
         x.numBlocks = 0;
-    })
+    });
     blocks = [];
     let width = PlayBoard.width / BLOCK_WIDTH;
     let height = PlayBoard.height / BLOCK_WIDTH;
@@ -100,10 +96,9 @@ function calculateNumOfBlocks() {
 
 function individualCheck(ballObject, inc) {
     let x = ballObject;
-    if (x.x < canvas.x || x.x > canvas.x + canvas.width) {
+    if (x.x < PlayBoard.x || x.x > PlayBoard.x + PlayBoard.width) {
         balls.splice(inc, 1);
-    }
-    else if (x.y < canvas.y || x.y > canvas.y + canvas.height) {
+    } else if (x.y < PlayBoard.y || x.y > PlayBoard.y + PlayBoard.height) {
         balls.splice(inc, 1);
     }
 }
@@ -111,12 +106,10 @@ function individualCheck(ballObject, inc) {
 function checkIfBallsGotResizedOut() {
     balls.forEach((x, inc) => {
         individualCheck(x, inc);
-    })
+    });
 }
 
-
 var last = 0;
-
 
 function animation(now) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -124,7 +117,6 @@ function animation(now) {
     if (PlayBoard.needToResetBoard) {
         calculateNumOfBlocks();
         PlayBoard.needToResetBoard = false;
-
     }
     blocks.forEach((x) => {
         x.draw();
@@ -133,31 +125,38 @@ function animation(now) {
         if (x.canPlay) {
             x.drawShooter();
         }
-        
     });
-    
 
-    if(!last || now - last >= 1000) {
+    if (!last || now - last >= 1000) {
         last = now;
         players.forEach((x) => {
             if (!x.fire && x.canPlay) {
                 x.randomizeShots();
             }
-            
-        })
-
-    };
+        });
+        /* try {
+            let xVal = Math.floor((balls[0].x - PlayBoard.x) / BLOCK_WIDTH);
+            let yVal = Math.floor((balls[0].y - PlayBoard.y) / BLOCK_WIDTH);
+            let width = PlayBoard.width / BLOCK_WIDTH;
+            let height = PlayBoard.height / BLOCK_WIDTH;
+            blocks.forEach((x, inc) => {
+                let y = x.testHit(balls[0].color, balls[0].x, balls[0].y);
+                if (y.inBox) {
+                    console.log(yVal * width + xVal === inc);
+                }
+            });
+        } catch (Err) {} */
+    }
     let playersStillIn = 0;
     players.forEach((x) => {
         if (x.fire && x.canPlay) {
-            if(!x.last || now - x.last >= 50) {
+            if (!x.last || now - x.last >= 50) {
                 x.last = now;
                 x.shoot();
-            };
+            }
         }
 
-        x.canPlay ? playersStillIn += 1 : playersStillIn += 0;
-
+        x.canPlay ? (playersStillIn += 1) : (playersStillIn += 0);
     });
 
     if (playersStillIn === 1) {
@@ -166,36 +165,58 @@ function animation(now) {
     balls.forEach((x, inc1) => {
         x.update(PlayBoard);
         x.draw();
-        individualCheck(x, inc1);
         let stopBool = false;
-        let counterLeft = 0; 
+        let counterLeft = 0;
         let counterRight = blocks.length - 1;
-        while (!stopBool) {
-                try {
-                    let q1, q2;
-                    if (x.shooterColor === 'green' || x.shooterColor === 'red') {
-                        q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
-                    } else {
-                        q2 = blocks[counterRight].testHit(x.color, x.x, x.y);
-                    }
-                    
-                    
-                    if ((q1 && q1?.inBox) || (q2 && q2?.inBox)) {
-                        stopBool = true;
-                        if (q1?.differentColor || q2?.differentColor) {
-                            balls.splice(inc1, 1);
-                        }
-                    }
-                } catch (error) {
-                    //balls.splice(inc1, 1);
-                    stopBool = true;
-                }
+        try {
+            let xVal = Math.floor((x.x - PlayBoard.x) / BLOCK_WIDTH);
+            let yVal = Math.floor((x.y - PlayBoard.y) / BLOCK_WIDTH);
+            let width = PlayBoard.width / BLOCK_WIDTH;
+            let q1 = blocks[yVal * width + xVal].testHit(x.color, x.x, x.y);
+            let q2;
+
+            //error in calculation
+            if (q1 && !q1.inBox) {
                 
+                while (!stopBool) {
+                    try {
+                        if (
+                            x.shooterColor === "green" ||
+                            x.shooterColor === "red"
+                        ) {
+                            q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
+                        } else {
+                            q2 = blocks[counterRight].testHit(
+                                x.color,
+                                x.x,
+                                x.y
+                            );
+                        }
 
+                        if ((q1 && q1?.inBox) || (q2 && q2?.inBox)) {
+                            stopBool = true;
+                            if (q1?.differentColor || q2?.differentColor) {
+                                balls.splice(inc1, 1);
+                            }
+                        }
+                    } catch (err) {
+                        stopBool = true;
+                    }
 
-            counterLeft+=1;
-            counterRight-=1;
-        }
+                    counterLeft += 1;
+                    counterRight -= 1;
+                }
+            }
+            //otherwise we check if the colors match
+            else {
+                if (q1?.differentColor || q2?.differentColor) {
+                    balls.splice(inc1, 1);
+                }
+            }
+
+            
+        } catch (error) {console.log(error)}
+
         /*
         blocks.forEach((y, inc2) => {
             //maybe pointers on each end to move towards instead of forEach?
@@ -207,8 +228,9 @@ function animation(now) {
     });
 
     setTimeout(() => {
-        if (!PAUSE) { window.requestAnimationFrame(animation)};
+        if (!PAUSE) {
+            window.requestAnimationFrame(animation);
+        }
     }, 0);
-
 }
 animation();
