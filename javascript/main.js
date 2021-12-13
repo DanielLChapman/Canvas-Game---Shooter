@@ -14,6 +14,9 @@ let BLOCK_WIDTH = 25;
 let resize = false;
 let balls = [];
 
+let amountOfChecks = 0;
+let numFrames = 0;
+
 const PlayBoard = new Board(PLAYER_WIDTH);
 PlayBoard.checkWidthAndHeight();
 
@@ -110,6 +113,7 @@ function checkIfBallsGotResizedOut() {
 }
 
 var last = 0;
+var amountLast = 0;
 
 function animation(now) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -126,9 +130,12 @@ function animation(now) {
             x.drawShooter();
         }
     });
+    numFrames++;
 
     if (!last || now - last >= 1000) {
         last = now;
+        console.log(numFrames);
+        numFrames = 0;
         players.forEach((x) => {
             if (!x.fire && x.canPlay) {
                 x.randomizeShots();
@@ -169,15 +176,69 @@ function animation(now) {
         let counterLeft = 0;
         let counterRight = blocks.length - 1;
         try {
-            let xVal = Math.floor((x.x - PlayBoard.x) / BLOCK_WIDTH);
-            let yVal = Math.floor((x.y - PlayBoard.y) / BLOCK_WIDTH);
+            let xVal1 = Math.floor((x.x - PlayBoard.x) / BLOCK_WIDTH);
+            let xVal2 = Math.floor((x.x + 2.5 - PlayBoard.x) / BLOCK_WIDTH);
+            let xVal3 = Math.floor((x.x - 2.5 - PlayBoard.x) / BLOCK_WIDTH);
+            let yVal1 = Math.floor((x.y - PlayBoard.y) / BLOCK_WIDTH);
+            let yVal2 = Math.floor((x.y + 2.5 - PlayBoard.y) / BLOCK_WIDTH);
+            let yVal3 = Math.floor((x.y - 2.5 - PlayBoard.y) / BLOCK_WIDTH);
+
             let width = PlayBoard.width / BLOCK_WIDTH;
-            let q1 = blocks[yVal * width + xVal].testHit(x.color, x.x, x.y);
+
+            let q1;
+            q1 = blocks[yVal1 * width + xVal1]?.testHit(x.color, x.x, x.y);
+            amountOfChecks += 1;
+            if (q1 && !q1.inBox) {
+                amountOfChecks += 6;
+                let temp1 = blocks[yVal1 * width + xVal2]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+                let temp2 = blocks[yVal1 * width + xVal3]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+                let temp3 = blocks[yVal2 * width + xVal1]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+                let temp4 = blocks[yVal3 * width + xVal1]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+                let temp5 = blocks[yVal2 * width + xVal2]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+                let temp6 = blocks[yVal3 * width + xVal3]?.testHit(
+                    x.color,
+                    x.x,
+                    x.y
+                );
+
+                if (temp1?.inBox) {
+                    q1 = temp1;
+                } else if (temp2?.inBox) {
+                    q1 = temp2;
+                } else if (temp3?.inBox) {
+                    q1 = temp3;
+                } else if (temp4?.inBox) {
+                    q1 = temp4;
+                } else if (temp5?.inBox) {
+                    q1 = temp5;
+                } else if (temp6?.inBox) {
+                    q1 = temp6;
+                }
+            }
             let q2;
 
             //error in calculation
             if (q1 && !q1.inBox) {
-                
                 while (!stopBool) {
                     try {
                         if (
@@ -185,12 +246,14 @@ function animation(now) {
                             x.shooterColor === "red"
                         ) {
                             q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
+                            amountOfChecks+=1;
                         } else {
                             q2 = blocks[counterRight].testHit(
                                 x.color,
                                 x.x,
                                 x.y
                             );
+                            amountOfChecks+=1;
                         }
 
                         if ((q1 && q1?.inBox) || (q2 && q2?.inBox)) {
@@ -209,13 +272,13 @@ function animation(now) {
             }
             //otherwise we check if the colors match
             else {
-                if (q1?.differentColor || q2?.differentColor) {
+                if (q1?.differentColor || (q2 && q2?.differentColor)) {
                     balls.splice(inc1, 1);
                 }
             }
-
-            
-        } catch (error) {console.log(error)}
+        } catch (error) {
+            console.log(error);
+        }
 
         /*
         blocks.forEach((y, inc2) => {
@@ -227,9 +290,17 @@ function animation(now) {
         })*/
     });
 
+    if (!amountLast || now - amountLast >= 60000) {
+        amountLast = now;
+        console.log(amountOfChecks);
+        amountOfChecks = 0;
+    }
+
     setTimeout(() => {
         if (!PAUSE) {
             window.requestAnimationFrame(animation);
+        } else {
+            console.log(amountOfChecks);
         }
     }, 0);
 }
