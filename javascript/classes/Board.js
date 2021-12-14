@@ -1,7 +1,9 @@
 class Board {
     constructor(playerWidth) {
         this.playerWidth = playerWidth
+        this.baseX = 0 + playerWidth + 5;
         this.x = 0 + playerWidth + 5;
+        this.baseY = 5;
         this.y = 5;
         this.width = canvas.width - playerWidth * 2 - 10;
         this.height = canvas.height - 15;
@@ -17,7 +19,11 @@ class Board {
     }
 
     checkWidthAndHeight() {
+        let temp = this.width;
         this.width = Math.floor(this.width /BLOCK_WIDTH ) * BLOCK_WIDTH;
+        temp = temp - this.width;
+        temp /= 2;
+        this.x = this.baseX + temp;
         this.height = Math.floor(this.height / BLOCK_WIDTH) * BLOCK_WIDTH;
     }
 

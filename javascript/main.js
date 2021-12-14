@@ -10,7 +10,9 @@ let PAUSE = false;
 let PLAYER_WIDTH = 250;
 let PLAYER_HEIGHT = 300;
 
-let BLOCK_WIDTH = 25;
+
+let SPEED_CONTROL = 15;
+let BLOCK_WIDTH = 30;
 let resize = false;
 let balls = [];
 
@@ -113,10 +115,11 @@ function checkIfBallsGotResizedOut() {
 }
 
 var last = 0;
-var amountLast = 0;
 
 function animation(now) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#363636';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     PlayBoard.draw();
     if (PlayBoard.needToResetBoard) {
         calculateNumOfBlocks();
@@ -129,30 +132,20 @@ function animation(now) {
         if (x.canPlay) {
             x.drawShooter();
         }
+        //x.gui.draw();
+        x.gui.drawScore(x.numShots);
+        x.gui.drawBoxes(x.shootOption)
     });
     numFrames++;
 
     if (!last || now - last >= 1000) {
         last = now;
-        console.log(numFrames);
         numFrames = 0;
         players.forEach((x) => {
             if (!x.fire && x.canPlay) {
                 x.randomizeShots();
             }
         });
-        /* try {
-            let xVal = Math.floor((balls[0].x - PlayBoard.x) / BLOCK_WIDTH);
-            let yVal = Math.floor((balls[0].y - PlayBoard.y) / BLOCK_WIDTH);
-            let width = PlayBoard.width / BLOCK_WIDTH;
-            let height = PlayBoard.height / BLOCK_WIDTH;
-            blocks.forEach((x, inc) => {
-                let y = x.testHit(balls[0].color, balls[0].x, balls[0].y);
-                if (y.inBox) {
-                    console.log(yVal * width + xVal === inc);
-                }
-            });
-        } catch (Err) {} */
     }
     let playersStillIn = 0;
     players.forEach((x) => {
@@ -187,9 +180,7 @@ function animation(now) {
 
             let q1;
             q1 = blocks[yVal1 * width + xVal1]?.testHit(x.color, x.x, x.y);
-            amountOfChecks += 1;
             if (q1 && !q1.inBox) {
-                amountOfChecks += 6;
                 let temp1 = blocks[yVal1 * width + xVal2]?.testHit(
                     x.color,
                     x.x,
@@ -246,14 +237,12 @@ function animation(now) {
                             x.shooterColor === "red"
                         ) {
                             q1 = blocks[counterLeft].testHit(x.color, x.x, x.y);
-                            amountOfChecks+=1;
                         } else {
                             q2 = blocks[counterRight].testHit(
                                 x.color,
                                 x.x,
                                 x.y
                             );
-                            amountOfChecks+=1;
                         }
 
                         if ((q1 && q1?.inBox) || (q2 && q2?.inBox)) {
@@ -280,27 +269,10 @@ function animation(now) {
             console.log(error);
         }
 
-        /*
-        blocks.forEach((y, inc2) => {
-            //maybe pointers on each end to move towards instead of forEach?
-            let q = y.testHit(x.color, x.x, x.y);
-            if (q) {
-                balls.splice(inc1, 1);
-            }
-        })*/
     });
-
-    if (!amountLast || now - amountLast >= 60000) {
-        amountLast = now;
-        console.log(amountOfChecks);
-        amountOfChecks = 0;
-    }
-
     setTimeout(() => {
         if (!PAUSE) {
             window.requestAnimationFrame(animation);
-        } else {
-            console.log(amountOfChecks);
         }
     }, 0);
 }
