@@ -28,13 +28,18 @@ class Player {
     }
 
     shoot() {
-
         if (this.numShots > 0) {
             this.numShots -= 1;
             if (this.numShots === 0) {
                 this.fire = false;
             }
-            let shot = new Ball(this.lineToX, this.lineToY, calculateWidth(60, this.degrees)/SPEED_CONTROL, calculateHeight(60, this.degrees)/SPEED_CONTROL, this.shooterColor);
+            let shot = new Ball(
+                this.lineToX,
+                this.lineToY,
+                calculateWidth(60, this.degrees) / SPEED_CONTROL,
+                calculateHeight(60, this.degrees) / SPEED_CONTROL,
+                this.shooterColor
+            );
             balls.push(shot);
         }
     }
@@ -57,10 +62,7 @@ class Player {
         ctx.moveTo(xCoord, yCoord);
         this.lineToX = xCoord + calculateWidth(60, this.degrees);
         this.lineToY = yCoord + calculateHeight(60, this.degrees);
-        ctx.lineTo(
-            this.lineToX,
-            this.lineToY
-        );
+        ctx.lineTo(this.lineToX, this.lineToY);
         ctx.fill();
         this.degrees += this.progression;
         if (
@@ -79,23 +81,70 @@ class Player {
                 this.numShots = 1;
                 this.shootOption = 0;
             }
-    
-            let x = Math.floor( Math.random() * 3);
-            if ( x === 0) {
+
+            let x = Math.floor(Math.random() * 3);
+            if (x === 0) {
                 this.numShots *= 2;
                 this.shootOption = 1;
-                
             } else if (x === 2) {
-                this.numShots +=2;
+                this.numShots += 2;
                 this.shootOption = 2;
             } else {
                 this.fire = true;
                 this.shootOption = 3;
             }
-
         }
-    
-        
+    };
+
+    updateGUIPosition(count) {
+        switch (count) {
+            case 1:
+                this.x = 0;
+                this.y = 0;
+                this.gui = new PlayerView(
+                    this.x,
+                    this.y,
+                    1,
+                    PLAYER_WIDTH,
+                    PLAYER_HEIGHT
+                );
+                break;
+            case 2:
+                this.x = canvas.width - this.width;
+                this.y = 0;
+                this.gui = new PlayerView(
+                    this.x,
+                    this.y,
+                    2,
+                    PLAYER_WIDTH,
+                    PLAYER_HEIGHT
+                );
+                break;
+            case 3:
+                this.x = 0;
+                this.y = canvas.height - this.height;
+                this.gui = new PlayerView(
+                    this.x,
+                    this.y,
+                    3,
+                    PLAYER_WIDTH,
+                    PLAYER_HEIGHT
+                );
+                break;
+            case 4:
+                this.x = canvas.width - this.width;
+                this.y = canvas.height - this.height;
+                this.gui = new PlayerView(
+                    this.x,
+                    this.y,
+                    4,
+                    PLAYER_WIDTH,
+                    PLAYER_HEIGHT
+                );
+                break;
+            default:
+                console.log(count);
+        }
     }
 
     setPlayer = (count) => {
@@ -105,10 +154,9 @@ class Player {
             this.shooterColor = "green";
             this.startPosition = 89.5;
             this.degrees = 89.5;
-           
+
             this.maxDegreesChange = 0.5;
             this.progression = -1;
-            this.gui = new PlayerView(this.x, this.y, 1, PLAYER_WIDTH, PLAYER_HEIGHT);
         }
         if (count === 2) {
             this.x = canvas.width - this.width;
@@ -116,10 +164,9 @@ class Player {
             this.shooterColor = "red";
             this.startPosition = -179.5;
             this.degrees = -179.5;
-           
+
             this.maxDegreesChange = -269.5;
             this.progression = -1;
-            this.gui = new PlayerView(this.x, this.y, 2, PLAYER_WIDTH, PLAYER_HEIGHT);
         }
         if (count === 3) {
             this.x = 0;
@@ -127,10 +174,10 @@ class Player {
             this.shooterColor = "yellow";
             this.startPosition = -0.5;
             this.degrees = -0.5;
-           
+
             this.maxDegreesChange = -89.5;
             this.progression = -1;
-            this.gui = new PlayerView(this.x, this.y, 3, PLAYER_WIDTH, PLAYER_HEIGHT);
+
         }
         if (count === 4) {
             this.x = canvas.width - this.width;
@@ -138,10 +185,9 @@ class Player {
             this.shooterColor = "purple";
             this.startPosition = -89.5;
             this.degrees = -89.5;
-           
+
             this.maxDegreesChange = -179.5;
             this.progression = -1;
-            this.gui = new PlayerView(this.x, this.y, 4, PLAYER_WIDTH, PLAYER_HEIGHT);
         }
     };
 }

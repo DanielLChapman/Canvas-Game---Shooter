@@ -14,6 +14,8 @@ let PLAYER_HEIGHT = 300;
 let SPEED_CONTROL = 15;
 let BLOCK_WIDTH = 30;
 let resize = false;
+let updatePlayerGUI = true;
+let CHECK_BALLS = false;
 let balls = [];
 
 let amountOfChecks = 0;
@@ -38,6 +40,8 @@ const players = [Player1, Player2, Player3, Player4];
 
 window.addEventListener("resize", (e) => {
     resize = true;
+    CHECK_BALLS = true;
+    updatePlayerGUI = true;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     if (window.innerWidth < 800 || window.innerHeight < 600) {
@@ -128,15 +132,21 @@ function animation(now) {
     blocks.forEach((x) => {
         x.draw();
     });
-    players.forEach((x) => {
+    players.forEach((x, count) => {
         if (x.canPlay) {
             x.drawShooter();
         }
         //x.gui.draw();
+        if (updatePlayerGUI) {
+            x.updateGUIPosition(count+1);
+            if (count === 3) {
+                updatePlayerGUI = false;
+            }
+        }
         x.gui.drawScore(x.numShots);
         x.gui.drawBoxes(x.shootOption)
     });
-    numFrames++;
+
 
     if (!last || now - last >= 1000) {
         last = now;
@@ -161,6 +171,10 @@ function animation(now) {
 
     if (playersStillIn === 1) {
         PAUSE = true;
+    }
+    if (CHECK_BALLS) {
+        checkIfBallsGotResizedOut();
+        CHECK_BALLS = false;
     }
     balls.forEach((x, inc1) => {
         x.update(PlayBoard);
@@ -270,6 +284,7 @@ function animation(now) {
         }
 
     });
+
     setTimeout(() => {
         if (!PAUSE) {
             window.requestAnimationFrame(animation);
