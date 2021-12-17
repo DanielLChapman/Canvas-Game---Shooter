@@ -44,7 +44,7 @@ class Block {
         ctx.fillStyle = this.color;
         ctx.strokeStyle = "#000";
         ctx.lineWidth = 2;
-        ctx.rect(this.x, this.y, BLOCK_WIDTH, BLOCK_WIDTH);
+        ctx.rect(this.x, this.y, this.width, this.height);
         ctx.fill();
 
         ctx.stroke();

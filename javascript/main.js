@@ -10,7 +10,7 @@ message.style.display = "none";
 let blockSizeSlider = document.getElementById('blockSize');
 let ballSpeed = document.getElementById('ballSpeed');
 
-let BLOCK_WIDTH = 20;
+let BLOCK_WIDTH = 40;
 let SPEED_CONTROL = 15;
 let PAUSE = false;
 let blocks = [];
@@ -29,14 +29,18 @@ let balls = [];
 let amountOfChecks = 0;
 let numFrames = 0;
 
+const PlayBoard = new Board(PLAYER_WIDTH);
+PlayBoard.checkWidthAndHeight();
+
 
 
 blockSizeSlider.oninput = function() {
-    setPause(true);
-    console.log(this.value);
-    BLOCK_WIDTH = this.value;
-    calculateNumOfBlocks();
-    setPause(false);
+    BLOCK_WIDTH = parseInt(this.value, 10);
+    PlayBoard.checkWidthAndHeight() 
+    resize = true;
+    calculateNumOfBlocks(false);
+
+
 }
 
 ballSpeed.oninput = function() {
@@ -53,9 +57,6 @@ ballSpeed.oninput = function() {
 }
 
 
-
-const PlayBoard = new Board(PLAYER_WIDTH);
-PlayBoard.checkWidthAndHeight();
 
 const Player1 = new Player();
 Player1.setPlayer(1);
@@ -97,7 +98,7 @@ function reset() {
     });
 }
 
-function calculateNumOfBlocks() {
+function calculateNumOfBlocks(unpause) {
     players.forEach((x) => {
         x.numBlocks = 0;
     });
@@ -105,7 +106,6 @@ function calculateNumOfBlocks() {
     let width = PlayBoard.width / BLOCK_WIDTH;
     let height = PlayBoard.height / BLOCK_WIDTH;
     let totalAmount = width * height;
-
     let blockX = PlayBoard.x;
     let blockY = PlayBoard.y;
     let tempBlock;
@@ -142,6 +142,10 @@ function calculateNumOfBlocks() {
 
         blocks.push(tempBlock);
     }
+
+    if(unpause) {
+        setPause(false);
+    }
 }
 
 function individualCheck(ballObject, inc) {
@@ -171,14 +175,17 @@ function setPause(boolVal) {
 } 
 
 var last = 0;
+var secondCounter = 0;
 
 function animation(now) {
+    if (!PAUSE) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#363636';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     PlayBoard.draw();
     if (PlayBoard.needToResetBoard) {
-        calculateNumOfBlocks();
+        calculateNumOfBlocks(false);
+
         PlayBoard.needToResetBoard = false;
     }
     blocks.forEach((x) => {
@@ -336,6 +343,8 @@ function animation(now) {
         }
 
     });
+
+    }
 
     setTimeout(() => {
         if (!PAUSE) {
