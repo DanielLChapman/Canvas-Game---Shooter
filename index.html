@@ -3,10 +3,25 @@
     <head>
 
     </head>
-    <body>
+    
         <canvas id="canvas">
 
         </canvas>
+        <section id="canvas-settings">
+            <div class="canvas-settings-openclose" onclick="openCloseSettings('Open')">
+                > > > >
+            </div>
+            <div class="canvas-settings-window" id="canvas-settings-window">
+                <span id="close" onclick="openCloseSettings('Close')">X</span>
+                <div id="pause" onclick="setPause(!PAUSE)">PAUSE</div>
+                <div id="block-size">
+                    <input type="range" min="20" max="50" value="30" class="slider" id="blockSize">
+                </div>
+                <div id="ball-speed">
+                    <input type="range" min="10" max="50" value="15" class="slider" id="ballSpeed" style="transform: translateY(180);">
+                </div>
+            </div>
+        </section>
         <span id="message">Browser either does not have JS enabled, the height is too small of the browser, or the width is too small.</span>
     </body>
     <link rel="stylesheet" href="main.css" >

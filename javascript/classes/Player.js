@@ -1,3 +1,4 @@
+
 class Player {
     constructor() {
         this.width = 250;
@@ -36,8 +37,8 @@ class Player {
             let shot = new Ball(
                 this.lineToX,
                 this.lineToY,
-                calculateWidth(60, this.degrees) / SPEED_CONTROL,
-                calculateHeight(60, this.degrees) / SPEED_CONTROL,
+                calculateWidth(60, this.degrees) * (SPEED_CONTROL/175),
+                calculateHeight(60, this.degrees) * (SPEED_CONTROL/175),
                 this.shooterColor
             );
             balls.push(shot);
@@ -122,7 +123,7 @@ class Player {
                 break;
             case 3:
                 this.x = 0;
-                this.y = canvas.height - this.height;
+                this.y = canvas.height - this.height+35;
                 this.gui = new PlayerView(
                     this.x,
                     this.y,
@@ -133,7 +134,7 @@ class Player {
                 break;
             case 4:
                 this.x = canvas.width - this.width;
-                this.y = canvas.height - this.height;
+                this.y = canvas.height - this.height+35;
                 this.gui = new PlayerView(
                     this.x,
                     this.y,

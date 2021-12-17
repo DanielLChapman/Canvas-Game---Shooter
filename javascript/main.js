@@ -1,4 +1,5 @@
 const canvas = document.querySelector("#canvas");
+const canvasMessage = document.querySelector("#canvas-settings");
 const message = document.querySelector("#message");
 const ctx = canvas.getContext("2d");
 //console.log(ctx);
@@ -6,13 +7,20 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 message.style.display = "none";
 
+let blockSizeSlider = document.getElementById('blockSize');
+let ballSpeed = document.getElementById('ballSpeed');
+
+let BLOCK_WIDTH = 20;
+let SPEED_CONTROL = 15;
 let PAUSE = false;
+let blocks = [];
+
 let PLAYER_WIDTH = 250;
 let PLAYER_HEIGHT = 300;
 
 
-let SPEED_CONTROL = 15;
-let BLOCK_WIDTH = 30;
+
+
 let resize = false;
 let updatePlayerGUI = true;
 let CHECK_BALLS = false;
@@ -20,6 +28,31 @@ let balls = [];
 
 let amountOfChecks = 0;
 let numFrames = 0;
+
+
+
+blockSizeSlider.oninput = function() {
+    setPause(true);
+    console.log(this.value);
+    BLOCK_WIDTH = this.value;
+    calculateNumOfBlocks();
+    setPause(false);
+}
+
+ballSpeed.oninput = function() {
+    if (this.value !== SPEED_CONTROL) {
+        balls.forEach((x) => {
+            x.xSpeed = x.xSpeed * (175 / SPEED_CONTROL) * (this.value / 175);
+            x.ySpeed = x.ySpeed * (175 / SPEED_CONTROL) * (this.value / 175)
+            if (x.xSpeed === 0 || x.ySpeed === 0) {
+
+            }
+        })
+        SPEED_CONTROL = this.value;
+    }
+}
+
+
 
 const PlayBoard = new Board(PLAYER_WIDTH);
 PlayBoard.checkWidthAndHeight();
@@ -45,19 +78,27 @@ window.addEventListener("resize", (e) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     if (window.innerWidth < 800 || window.innerHeight < 600) {
+        
         canvas.style.display = "none";
         message.style.display = "block";
+        canvasMessage.style.display = "none";
     } else {
         canvas.style.display = "block";
+        canvasMessage.style.display = "block";
         message.style.display = "none";
     }
 });
 
-let blocks = [];
+
+function reset() {
+    players.forEach((x) => {
+        x.canPlay = true;
+        x.numBlocks = 0;
+    });
+}
 
 function calculateNumOfBlocks() {
     players.forEach((x) => {
-        x.canPlay = true;
         x.numBlocks = 0;
     });
     blocks = [];
@@ -117,6 +158,17 @@ function checkIfBallsGotResizedOut() {
         individualCheck(x, inc);
     });
 }
+
+function setPause(boolVal) {
+    if (boolVal) {
+        PAUSE = true;
+        document.getElementById('pause').innerHTML = 'Paused';
+    } else {
+        PAUSE = false;
+        document.getElementById('pause').innerHTML = 'Pause';
+        animation();
+    }
+} 
 
 var last = 0;
 
