@@ -22,6 +22,7 @@ class Player {
         this.canPlay = true;
         this.gui = null;
         this.shootOption = 0;
+        this.wins = 0;
     }
 
     eliminate() {

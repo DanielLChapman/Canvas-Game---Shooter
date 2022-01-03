@@ -36,6 +36,7 @@ PlayBoard.checkWidthAndHeight();
 
 blockSizeSlider.oninput = function() {
     BLOCK_WIDTH = parseInt(this.value, 10);
+    document.querySelector('#block-size-value').innerHTML = BLOCK_WIDTH;
     PlayBoard.checkWidthAndHeight() 
     resize = true;
     calculateNumOfBlocks(false);
@@ -53,6 +54,7 @@ ballSpeed.oninput = function() {
             }
         })
         SPEED_CONTROL = this.value;
+        document.querySelector('#ball-speed-value').innerHTML = SPEED_CONTROL;
     }
 }
 
@@ -91,12 +93,6 @@ window.addEventListener("resize", (e) => {
 });
 
 
-function reset() {
-    players.forEach((x) => {
-        x.canPlay = true;
-        x.numBlocks = 0;
-    });
-}
 
 function calculateNumOfBlocks(unpause) {
     players.forEach((x) => {
@@ -166,16 +162,38 @@ function checkIfBallsGotResizedOut() {
 function setPause(boolVal) {
     if (boolVal) {
         PAUSE = true;
-        document.getElementById('pause').innerHTML = 'Paused';
+        document.getElementById('pause').innerHTML = `<span>Paused</span>`;
     } else {
         PAUSE = false;
-        document.getElementById('pause').innerHTML = 'Pause';
+        document.getElementById('pause').innerHTML = `<span>Start</span>`;
         animation();
     }
 } 
 
 var last = 0;
 var secondCounter = 0;
+
+//victory window setup
+let window2 = document.querySelector('.victory-window');
+window2.style.display = 'none';
+
+
+function reset() {
+    players.forEach((x) => {
+        x.canPlay = true;
+        x.numBlocks = 0;
+        x.numShots = 1;
+    });
+    balls = [];
+    calculateNumOfBlocks();
+    window2.style.display = 'none';
+    window2.innerHTML = ""
+    if (PAUSE) {
+        setPause(false);
+    }
+
+}
+
 
 function animation(now) {
     if (!PAUSE) {
@@ -191,21 +209,7 @@ function animation(now) {
     blocks.forEach((x) => {
         x.draw();
     });
-    players.forEach((x, count) => {
-        if (x.canPlay) {
-            x.drawShooter();
-        }
-        //x.gui.draw();
-        if (updatePlayerGUI) {
-            x.updateGUIPosition(count+1);
-            if (count === 3) {
-                updatePlayerGUI = false;
-            }
-        }
-        x.gui.drawScore(x.numShots);
-        x.gui.drawBoxes(x.shootOption)
-    });
-
+    
 
     if (!last || now - last >= 1000) {
         last = now;
@@ -217,6 +221,7 @@ function animation(now) {
         });
     }
     let playersStillIn = 0;
+    let playersStillInArray = [];
     players.forEach((x) => {
         if (x.fire && x.canPlay) {
             if (!x.last || now - x.last >= 50) {
@@ -225,12 +230,36 @@ function animation(now) {
             }
         }
 
-        x.canPlay ? (playersStillIn += 1) : (playersStillIn += 0);
+        if (x.canPlay) {
+            playersStillInArray.push(x)
+        };
     });
 
-    if (playersStillIn === 1) {
+
+    if (playersStillInArray.length === 1) {
         PAUSE = true;
+        playersStillInArray[0].wins++;
+        window2.style.display = 'block';
+        window2.innerHTML = `${playersStillInArray[0].shooterColor} Wins!`;
+        
     }
+    players.forEach((x, count) => {
+        
+        //x.gui.draw();
+        if (updatePlayerGUI) {
+            x.updateGUIPosition(count+1);
+            if (count === 3) {
+                updatePlayerGUI = false;
+            }
+        }
+        x.gui.drawScore(x.numShots, x.wins);
+        if (x.canPlay) {
+            x.drawShooter();
+            x.gui.drawBoxes(x.shootOption);
+        }
+        
+    });
+
     if (CHECK_BALLS) {
         checkIfBallsGotResizedOut();
         CHECK_BALLS = false;

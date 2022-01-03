@@ -9,19 +9,35 @@
         </canvas>
         <section id="canvas-settings">
             <div class="canvas-settings-openclose" onclick="openCloseSettings('Open')">
-                > > > >
+                Settings / About
             </div>
             <div class="canvas-settings-window" id="canvas-settings-window">
                 <span id="close" onclick="openCloseSettings('Close')">X</span>
-                <div id="pause" onclick="setPause(!PAUSE)">PAUSE</div>
-                <div id="block-size">
-                    <input type="range" min="20" max="50" value="30" class="slider" id="blockSize">
-                </div>
-                <div id="ball-speed">
-                    <input type="range" min="10" max="50" value="15" class="slider" id="ballSpeed" style="transform: translateY(180);">
-                </div>
+                <section class="canvas-settings-section">
+                    <div id="pause" onclick="setPause(!PAUSE)"><span>Pause</span></div>
+                    <div id="block-size">
+                        <span id="block-size-label">Block Size: <span id="block-size-value">40</span></span>
+                        <input type="range" min="20" max="50" value="40" class="slider" id="blockSize">
+                    </div>
+                    <div id="ball-speed">
+                        <span id="block-size-label">Ball Speed: <span id="ball-speed-value">15</span></span>
+                        <input type="range" min="10" max="50" value="15" class="slider" id="ballSpeed" style="transform: translateY(180);">
+                    </div>
+                    <div id="restart" onclick="reset()"><span>Restart</span></div>
+                </section>
+                <section class="about">
+                    <span>This is just a fun interpretation of an automated game I found on youtube. 
+                        I cannot remember the channel name so if someone does please let me know.
+                        Game uses a randomizer to determine whether it adds shots, removes shots or fires. When all of one color is gone, it is eliminated.
+                        
+                    </span>
+                </section>
+                
             </div>
         </section>
+        <div class="victory-window">
+            
+        </div>
         <span id="message">Browser either does not have JS enabled, the height is too small of the browser, or the width is too small.</span>
     </body>
     <link rel="stylesheet" href="main.css" >

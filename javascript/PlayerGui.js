@@ -9,16 +9,16 @@ class PlayerView {
 
     }
 
-    drawScore(score = 0) {
+    drawScore(score = 0, wins) {
         ctx.beginPath();
         ctx.fillStyle = 'lightblue';
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 2;
         ctx.rect(this.x+15, this.y+15, this.width-30, 50);
         ctx.stroke();
-        ctx.font = '16px serif';
+        ctx.font = '14.5px serif';
         
-        ctx.fillText(`Player ${this.playerVal}: Num Shots: ${score}` , this.x+25, this.y+15+25);
+        ctx.fillText(`Player ${this.playerVal}: Num Shots: ${score} Wins: ${wins}` , this.x+25, this.y+15+25);
         ctx.strokeStyle = 'black';
     }
     drawBoxOne(color) {
