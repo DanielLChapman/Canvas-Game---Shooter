@@ -14,14 +14,26 @@ class PlayerView {
         ctx.fillStyle = 'lightblue';
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 2;
-        ctx.rect(this.x+15, this.y+15, this.width-30, 50);
-        ctx.stroke();
         ctx.font = '14.5px serif';
+        if ((this.playerVal === 3 || this.playerVal === 4) && plinkoPlay) {
+            ctx.rect(this.x+15, this.y+205, this.width-30, 50);
+            ctx.fillText(`Player ${this.playerVal}: Num Shots: ${score} Wins: ${wins}` , this.x+25, this.y+205+25);
+        } else {
+                let minusVal = plinkoPlay ? 10 : 0;
+                ctx.rect(this.x+15, this.y+15-minusVal, this.width-30, 50);
+                ctx.fillText(`Player ${this.playerVal}: Num Shots: ${score} Wins: ${wins}` , this.x+25, this.y+15+25-minusVal);
+            
+            
+        }
         
-        ctx.fillText(`Player ${this.playerVal}: Num Shots: ${score} Wins: ${wins}` , this.x+25, this.y+15+25);
+        ctx.stroke();
+        
+        
+        
         ctx.strokeStyle = 'black';
     }
     drawBoxOne(color) {
+        
         ctx.beginPath();
         ctx.fillStyle = 'lightblue';
         ctx.lineWidth = 2;

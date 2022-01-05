@@ -154,3 +154,14 @@ html, body {
     font-family: Arial, sans-serif;
     text-transform: capitalize;
   }
+
+  .plinko-container {
+      width: 240px;
+      height: calc(100vh - 150px);
+      top: 70px;
+      position: absolute;
+      right: 7.5px;
+      z-index: 50;
+      border:1px solid white;
+      display: none;
+  }

@@ -23,6 +23,29 @@ class Player {
         this.gui = null;
         this.shootOption = 0;
         this.wins = 0;
+        this.playerNum = 1;
+    }
+
+    updateShots(typeOfUpdate) {
+        if (!this.fire) {
+            if (this.numShots === 0) {
+                this.numShots = 1;
+            }
+            switch(typeOfUpdate) {
+                case 'addition': 
+                    this.numShots += 2;
+                    break;
+                case 'multiplication':
+                    this.numShots *= 2;
+                    break;
+                case 'fire':
+                    this.fire = true;
+                    break;
+                default:
+                    console.log(typeOfUpdate);
+            }
+        }
+        
     }
 
     eliminate() {
@@ -77,24 +100,29 @@ class Player {
         ctx.stroke();
     }
 
-    randomizeShots = () => {
+    randomizeShots = (plinkoRandomize) => {
         if (!this.fire) {
             if (this.numShots === 0) {
                 this.numShots = 1;
                 this.shootOption = 0;
             }
 
-            let x = Math.floor(Math.random() * 3);
-            if (x === 0) {
-                this.numShots *= 2;
-                this.shootOption = 1;
-            } else if (x === 2) {
-                this.numShots += 2;
-                this.shootOption = 2;
+            if (plinkoRandomize ) {
+                newParticle(random(245), 0, this.playerNum, this.shooterColor);
             } else {
-                this.fire = true;
-                this.shootOption = 3;
+                let x = Math.floor(Math.random() * 3);
+                if (x === 0) {
+                    this.numShots *= 2;
+                    this.shootOption = 1;
+                } else if (x === 2) {
+                    this.numShots += 2;
+                    this.shootOption = 2;
+                } else {
+                    this.fire = true;
+                    this.shootOption = 3;
+                }
             }
+            
         }
     };
 
@@ -152,6 +180,7 @@ class Player {
     setPlayer = (count) => {
         if (count === 1) {
             this.x = 0;
+            this.playerNum = 1;
             this.y = 0;
             this.shooterColor = "green";
             this.startPosition = 89.5;
@@ -163,6 +192,7 @@ class Player {
         if (count === 2) {
             this.x = canvas.width - this.width;
             this.y = 0;
+            this.playerNum = 2;
             this.shooterColor = "red";
             this.startPosition = -179.5;
             this.degrees = -179.5;
@@ -176,7 +206,7 @@ class Player {
             this.shooterColor = "yellow";
             this.startPosition = -0.5;
             this.degrees = -0.5;
-
+            this.playerNum = 3;
             this.maxDegreesChange = -89.5;
             this.progression = -1;
 
@@ -187,6 +217,7 @@ class Player {
             this.shooterColor = "purple";
             this.startPosition = -89.5;
             this.degrees = -89.5;
+            this.playerNum = 4;
 
             this.maxDegreesChange = -179.5;
             this.progression = -1;

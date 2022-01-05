@@ -7,6 +7,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 message.style.display = "none";
 
+
+
 let blockSizeSlider = document.getElementById('blockSize');
 let ballSpeed = document.getElementById('ballSpeed');
 
@@ -29,8 +31,19 @@ let balls = [];
 let amountOfChecks = 0;
 let numFrames = 0;
 
+let plinkoPlay = false;
+
 const PlayBoard = new Board(PLAYER_WIDTH);
 PlayBoard.checkWidthAndHeight();
+
+function togglePlinko() {
+    plinkoPlay = !plinkoPlay;
+    if (plinkoPlay) {
+        document.querySelector('.plinko-container').style.display = 'block';
+    } else {
+        document.querySelector('.plinko-container').style.display = 'none';
+    }
+}
 
 
 
@@ -216,7 +229,8 @@ function animation(now) {
         numFrames = 0;
         players.forEach((x) => {
             if (!x.fire && x.canPlay) {
-                x.randomizeShots();
+                x.randomizeShots(plinkoPlay ? true : false);
+
             }
         });
     }
@@ -255,7 +269,7 @@ function animation(now) {
         x.gui.drawScore(x.numShots, x.wins);
         if (x.canPlay) {
             x.drawShooter();
-            x.gui.drawBoxes(x.shootOption);
+            if (!plinkoPlay) {x.gui.drawBoxes(x.shootOption)};
         }
         
     });
