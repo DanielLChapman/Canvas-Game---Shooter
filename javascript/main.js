@@ -175,10 +175,10 @@ function checkIfBallsGotResizedOut() {
 function setPause(boolVal) {
     if (boolVal) {
         PAUSE = true;
-        document.getElementById('pause').innerHTML = `<span>Paused</span>`;
+        document.getElementById('pause').innerHTML = `Paused`;
     } else {
         PAUSE = false;
-        document.getElementById('pause').innerHTML = `<span>Start</span>`;
+        document.getElementById('pause').innerHTML = `Start`;
         animation();
     }
 } 

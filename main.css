@@ -27,7 +27,8 @@ html, body {
 }
 .about {
     position: relative;
-    margin-top: 35px;
+    margin-top: 25px;
+    margin-bottom: 15px;
     width: 80%;
     left: 10%;
     color: white;
@@ -73,7 +74,7 @@ html, body {
     position:relative;
     top: 20px;
 }
-#pause, #restart {
+#restart {
     width: 80%;
     left: 10%;
     position: relative;
@@ -157,11 +158,28 @@ html, body {
 
   .plinko-container {
       width: 240px;
-      height: calc(100vh - 150px);
-      top: 70px;
+      height: calc(100vh - 300px);
+      top: 50%;
+      transform: translateY(-50%);
       position: absolute;
       right: 7.5px;
       z-index: 50;
       border:1px solid white;
       display: none;
+  }
+  .plinko-play {
+    width: 80%;
+    height: 55px;
+    left: 10%;
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid white;
+    color: white;
+    text-shadow: 0 0 2px #000000;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
   }

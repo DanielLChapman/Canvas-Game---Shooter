@@ -8,7 +8,7 @@ function Plinko(x,y,r){
   }
   this.body = Bodies.circle(x,y,r,options);
   this.r = r;
-  this.hue = 0;
+  this.hue = random(360);
   this.sat = 0;
   this.bright = 0;
   this.offset = 0;
@@ -19,7 +19,7 @@ function Plinko(x,y,r){
 Plinko.prototype.show = function(){
 
   let pos = this.body.position;
-  fill(this.hue,this.sat,this.bright);
+  fill(this.hue, 255, 255);
   stroke(255);
   push();
   translate(pos.x,pos.y);

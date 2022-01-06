@@ -35,7 +35,7 @@ let results = {
 
 function setup() {
     colorMode(HSB);
-    canvas2 = createCanvas(240, windowHeight - 150);
+    canvas2 = createCanvas(240, windowHeight - 300);
     canvas2.parent(document.querySelector('.plinko-container'));
     cols = Math.ceil(width / 100) + 2;
     rows = Math.ceil(height / 50) + 2;
@@ -88,13 +88,13 @@ function mousePressed() {
 
 function newParticle(_x, _y, i, color = 'orange') {
 
-    let pA = new Particle(_x, _y, 8, i, color);
+    let pA = new Particle(_x, _y, 6, i, color);
     // console.log(pA.body)
     p.push(pA);
 }
 
 function draw() {
-    background(0, 0, 0);
+    background('#363636');
     // console.log(frameRate())
     if (!plinkoPlay) {
         Engine.clear(engine);
@@ -113,7 +113,7 @@ function draw() {
         let x = p[i]?.body?.position?.x;
         let y = p[i]?.body?.position?.y;
 
-        if (y > windowHeight - 158) {
+        if (y > windowHeight - 308) {
             if (x <= width / 3) {
                 players[p[i].player-1]?.updateShots('addition');
 
@@ -160,7 +160,7 @@ function windowSetup() {
 
             let y = spacewidth + i * spacewidth;
             if (y < height - 100) {
-                let plinkoR = random(4, 12);
+                let plinkoR = random(9, 16);
 
                 let plinko = new Plinko(x, y, plinkoR);
                 plinkos.push(plinko);
@@ -180,7 +180,7 @@ function windowSetup() {
 
     for (let i = 0; i < 4; i++) {
         let w = 4;
-        let h = 100;
+        let h = 80;
         let x = (i * width) / 3;
         let y = height - h / 2;
         if (i === 0) {

@@ -14,7 +14,7 @@
             <div class="canvas-settings-window" id="canvas-settings-window">
                 <span id="close" onclick="openCloseSettings('Close')">X</span>
                 <section class="canvas-settings-section">
-                    <div id="pause" onclick="setPause(!PAUSE)"><span>Pause</span></div>
+                    <button class="plinko-play" id="pause" onclick="setPause(!PAUSE)">Pause</button>
                     <div id="block-size">
                         <span id="block-size-label">Block Size: <span id="block-size-value">40</span></span>
                         <input type="range" min="20" max="50" value="40" class="slider" id="blockSize">
@@ -23,7 +23,7 @@
                         <span id="block-size-label">Ball Speed: <span id="ball-speed-value">15</span></span>
                         <input type="range" min="10" max="50" value="15" class="slider" id="ballSpeed" style="transform: translateY(180);">
                     </div>
-                    <div id="restart" onclick="reset()"><span>Restart</span></div>
+                    <button class="plinko-play" onclick="reset()">Restart!</button>
                 </section>
                 <section class="about">
                     <span>This is just a fun interpretation of an automated game I found on youtube. 
