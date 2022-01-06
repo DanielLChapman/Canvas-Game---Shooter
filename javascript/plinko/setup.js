@@ -45,6 +45,14 @@ function setup() {
     btn = select("#btn");
 
     function collision(event) {
+  /*       if (event.pairs.length >= 2) {
+            var pairs = event.pairs;
+            for(let i = 0; i < pairs.length;i++){
+                var bodyA = pairs[i].bodyA;
+                var bodyB = pairs[i].bodyB;
+            }
+
+        } */
         /*
     var pairs = event.pairs;
     for(let i = 0; i < pairs.length;i++){
@@ -82,9 +90,46 @@ function mousePressed() {
     for (let i = 1; i <= 4; i++) {
         newParticle(random(0, width), 0, i);
     } */
+
+    //let plinko = new Plinko(mouseX, mouseY, random(10,16));
+    //plinkos.push(plinko);
+    let mouseXClick = mouseX;
+    let mouseYClick = mouseY;
+    if (!(mouseXClick > width || mouseXClick < 0)) {
+        if (!(mouseYClick > height-80 || mouseYClick < 0)) {
+            //check if we are inside a plinko
+            let remove = [];
+            plinkos.forEach((xPlink, i) => {
+                if ((mouseXClick >= xPlink.body.bounds.min.x && mouseXClick <= xPlink.body.bounds.max.x) && (mouseYClick >= xPlink.body.bounds.min.y && mouseYClick <= xPlink.body.bounds.max.y)) {
+                    //if we are, remove it
+                    World.remove(world, xPlink.body);
+                    remove.push(i)
+                }
+            })
+
+            if (remove.length > 0) {
+                remove.forEach((x) => {
+                    plinkos.splice( x, 1);
+                })
+            } else {
+                    //otherwise create a new one
+
+                    let plinko = new Plinko(mouseXClick, mouseYClick, random(10, 16));
+                    plinkos.push(plinko);
+            }
+           
+
+           
+        }
+    }
 }
 
-
+function clearPlinkos() {
+    plinkos.forEach((x) => {
+        World.remove(world, x.body);
+    })
+    plinkos = [];
+}
 
 function newParticle(_x, _y, i, color = 'orange') {
 
