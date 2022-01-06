@@ -28,7 +28,7 @@ html, body {
 .about {
     position: relative;
     margin-top: 25px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     width: 80%;
     left: 10%;
     color: white;
@@ -36,7 +36,7 @@ html, body {
     font-family: Arial, sans-serif;
 }
 .note {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     position: relative;
     width: 80%;
     left: 10%;
@@ -69,6 +69,11 @@ html, body {
     z-index: 5;
     background: #363636;
     display: none;
+    overflow-y: auto;
+}
+
+.canvas-settings:last-child {
+    padding-bottom: 25px;
 }
 
 #close {
@@ -178,11 +183,11 @@ html, body {
   }
   .plinko-play {
     width: 80%;
-    height: 55px;
+    height: 25px;
     left: 10%;
     position: relative;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     background: transparent;
     box-shadow: none;
     border: 1px solid white;
@@ -191,4 +196,9 @@ html, body {
     font-size: 16px;
     font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
+  }
+
+  .num-input {
+      position: relative;
+      left: 10%;
   }
