@@ -251,7 +251,7 @@ function windowSetup() {
 
 
 function windowResized() {
-    resizeCanvas(240, windowHeight - 100);
+    resizeCanvas(240, windowHeight - 300);
     rows = Math.ceil(height / 50) + 2;
     windowSetup();
 }
