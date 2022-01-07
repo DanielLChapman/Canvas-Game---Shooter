@@ -27,14 +27,29 @@ var canvas2;
 var btn;
 let plinkoMinSize = 1;
 let plinkoMaxSize = 5;
-let plinkoParticleSize = 6
+let plinkoParticleSize = 6;
 let gravity = 2;
+let ownDrop = false;
 
+function newParticle(_x, _y, i, color = "orange") {
+    let pA = new Particle(_x, _y, plinkoParticleSize, i, color);
+    // console.log(pA.body)
+    p.push(pA);
+}
+
+function ownDropChange() {
+    ownDrop = !ownDrop;
+    if (ownDrop) {
+        document.querySelector('#plinko-own-drop').innerHTML = "Dropping Your Own!"
+    } else {
+        document.querySelector('#plinko-own-drop').innerHTML = "Drop Your Own!"
+    }
+}
 
 function setup() {
     colorMode(HSB);
     canvas2 = createCanvas(240, windowHeight - 300);
-    canvas2.parent(document.querySelector('.plinko-container'));
+    canvas2.parent(document.querySelector(".plinko-container"));
     rows = Math.ceil(height / 50) + 2;
     engine = Engine.create();
     world = engine.world;
@@ -42,7 +57,7 @@ function setup() {
     btn = select("#btn");
 
     function collision(event) {
-  /*       if (event.pairs.length >= 2) {
+        /*       if (event.pairs.length >= 2) {
             var pairs = event.pairs;
             for(let i = 0; i < pairs.length;i++){
                 var bodyA = pairs[i].bodyA;
@@ -82,48 +97,73 @@ function setup() {
     World.add(world, mConstraint);
 }
 
+
+
 function mousePressed() {
-/*     //will eventually be players left;
+  
+    let mouseXClick = mouseX;
+    let mouseYClick = mouseY;
+    if (ownDrop) {
+        if (!(mouseXClick > width || mouseXClick < 0)) {
+            if (!(mouseYClick > height - 80 || mouseYClick < 0)) {
+                let color = `rgba(${Math.floor(random(0, 256))}, ${Math.floor(random(0, 256))},${Math.floor(random(0, 256))},1)`;
+                let playerValueColor = Math.floor(random(1, 5));
+                newParticle(
+                    mouseX,
+                    mouseY,
+                    -1,
+                    color
+                );
+            }
+        }
+    } else {
+        /*     //will eventually be players left;
     for (let i = 1; i <= 4; i++) {
         newParticle(random(0, width), 0, i);
     } */
 
-    //let plinko = new Plinko(mouseX, mouseY, random(10,16));
-    //plinkos.push(plinko);
-    let mouseXClick = mouseX;
-    let mouseYClick = mouseY;
-    if (!(mouseXClick > width || mouseXClick < 0)) {
-        if (!(mouseYClick > height-80 || mouseYClick < 0)) {
-            //check if we are inside a plinko
-            let remove = [];
-            plinkos.forEach((xPlink, i) => {
-                if ((mouseXClick >= xPlink.body.bounds.min.x && mouseXClick <= xPlink.body.bounds.max.x) && (mouseYClick >= xPlink.body.bounds.min.y && mouseYClick <= xPlink.body.bounds.max.y)) {
-                    //if we are, remove it
-                    World.remove(world, xPlink.body);
-                    remove.push(i)
-                }
-            })
+        //let plinko = new Plinko(mouseX, mouseY, random(10,16));
+        //plinkos.push(plinko);
 
-            if (remove.length > 0) {
-                remove.forEach((x) => {
-                    plinkos.splice( x, 1);
-                })
-            } else {
+        if (!(mouseXClick > width || mouseXClick < 0)) {
+            if (!(mouseYClick > height - 80 || mouseYClick < 0)) {
+                //check if we are inside a plinko
+                let remove = [];
+                plinkos.forEach((xPlink, i) => {
+                    if (
+                        mouseXClick >= xPlink.body.bounds.min.x &&
+                        mouseXClick <= xPlink.body.bounds.max.x &&
+                        mouseYClick >= xPlink.body.bounds.min.y &&
+                        mouseYClick <= xPlink.body.bounds.max.y
+                    ) {
+                        //if we are, remove it
+                        World.remove(world, xPlink.body);
+                        remove.push(i);
+                    }
+                });
+
+                if (remove.length > 0) {
+                    remove.forEach((x) => {
+                        plinkos.splice(x, 1);
+                    });
+                } else {
                     //otherwise create a new one
 
-                    let plinko = new Plinko(mouseXClick, mouseYClick, random(plinkoMinSize, plinkoMaxSize));
+                    let plinko = new Plinko(
+                        mouseXClick,
+                        mouseYClick,
+                        random(plinkoMinSize, plinkoMaxSize)
+                    );
                     plinkos.push(plinko);
+                }
             }
-           
-
-           
         }
     }
 }
 
 function clearBoundrys() {
     bounds.forEach((x) => {
-        World.remove(world, x.body)
+        World.remove(world, x.body);
     });
 
     bounds = [];
@@ -132,7 +172,7 @@ function clearBoundrys() {
 function clearPlinkos() {
     plinkos.forEach((x) => {
         World.remove(world, x.body);
-    })
+    });
     plinkos = [];
 }
 
@@ -158,22 +198,14 @@ function resetPlinkos() {
     }
 }
 
-function newParticle(_x, _y, i, color = 'orange') {
-
-    let pA = new Particle(_x, _y, plinkoParticleSize, i, color);
-    // console.log(pA.body)
-    p.push(pA);
-}
-
 function draw() {
-    background('#363636');
+    background("#363636");
     // console.log(frameRate())
     if (!plinkoPlay) {
         Engine.clear(engine);
     } else {
         Engine.update(engine, 1000 / 60);
     }
-     
 
     for (let i = 0; i < p.length; i++) {
         p[i].show();
@@ -187,17 +219,15 @@ function draw() {
 
         if (y > windowHeight - 308) {
             if (x <= width / 3) {
-                players[p[i].player-1]?.updateShots('addition');
-
+                players[p[i].player - 1]?.updateShots("addition");
             } else if (x >= width - width / 3) {
-                players[p[i].player-1]?.updateShots('multiplication');
+                players[p[i].player - 1]?.updateShots("multiplication");
             } else {
-                players[p[i].player-1]?.updateShots('fire');
+                players[p[i].player - 1]?.updateShots("fire");
             }
             World.remove(world, p[i].body);
             p.splice(i, 1);
             i--;
-            
         }
     }
 
@@ -249,7 +279,6 @@ function windowSetup() {
     }
 }
 
-
 function windowResized() {
     resizeCanvas(240, windowHeight - 300);
     rows = Math.ceil(height / 50) + 2;
@@ -262,64 +291,59 @@ window.addEventListener("resize", () => {
     limit = setTimeout(windowResized, 100);
 });
 
-let colSlider = document.querySelector('#colNum');
+let colSlider = document.querySelector("#colNum");
 
-colSlider.oninput = function() {
+colSlider.oninput = function () {
     cols = parseInt(this.value, 10);
-    document.querySelector('#col-num-value').innerHTML = cols;
+    document.querySelector("#col-num-value").innerHTML = cols;
     windowSetup();
+};
 
+let rowSlider = document.querySelector("#rowNum");
 
-}
-
-let rowSlider = document.querySelector('#rowNum');
-
-rowSlider.oninput = function() {
+rowSlider.oninput = function () {
     rows = parseInt(this.value, 10);
-    document.querySelector('#row-num-value').innerHTML = rows;
+    document.querySelector("#row-num-value").innerHTML = rows;
     windowSetup();
+};
 
+let gravitySlider = document.querySelector("#gravityNum");
 
-}
-
-let gravitySlider = document.querySelector('#gravityNum');
-
-gravitySlider.oninput = function() {
+gravitySlider.oninput = function () {
     gravity = parseFloat(this.value);
-    document.querySelector('#gravity-num-value').innerHTML = gravity;
+    document.querySelector("#gravity-num-value").innerHTML = gravity;
     windowSetup();
-}
+};
 
-document.querySelector('#minPlinkoSize').oninput = function() {
+document.querySelector("#minPlinkoSize").oninput = function () {
     let val = parseInt(this.value, 10);
     if (val < 1 || val > 20) {
         val = 1;
     }
     plinkoMinSize = val;
-    if (plinkoMinSize > plinkoMaxSize ) {
+    if (plinkoMinSize > plinkoMaxSize) {
         let temp = plinkoMaxSize;
         plinkoMaxSize = plinkoMinSize;
         plinkoMinSize = temp;
-        document.querySelector('#maxPlinkoSize').value = plinkoMaxSize;
+        document.querySelector("#maxPlinkoSize").value = plinkoMaxSize;
     }
     this.value = plinkoMinSize;
 
     windowSetup();
-}
+};
 
-
-document.querySelector('#maxPlinkoSize').oninput = function() {
+document.querySelector("#maxPlinkoSize").oninput = function () {
     let val = parseInt(this.value, 10);
     if (val < 1 || val > 20) {
         val = 20;
     }
     plinkoMaxSize = val;
-    if (plinkoMinSize > plinkoMaxSize ) {
+    if (plinkoMinSize > plinkoMaxSize) {
         let temp = plinkoMaxSize;
         plinkoMaxSize = plinkoMinSize;
         plinkoMinSize = temp;
-        document.querySelector('#minPlinkoSize').value = plinkoMinSize;
+        document.querySelector("#minPlinkoSize").value = plinkoMinSize;
     }
     this.value = plinkoMaxSize;
     windowSetup();
-}
+};

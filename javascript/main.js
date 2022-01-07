@@ -178,7 +178,7 @@ function setPause(boolVal) {
         document.getElementById('pause').innerHTML = `Paused`;
     } else {
         PAUSE = false;
-        document.getElementById('pause').innerHTML = `Start`;
+        document.getElementById('pause').innerHTML = `Pause`;
         animation();
     }
 } 
