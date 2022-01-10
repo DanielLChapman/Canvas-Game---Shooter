@@ -9,8 +9,7 @@ message.style.display = "none";
 
 
 
-let blockSizeSlider = document.getElementById('blockSize');
-let ballSpeed = document.getElementById('ballSpeed');
+
 
 let BLOCK_WIDTH = 40;
 let SPEED_CONTROL = 15;
@@ -33,6 +32,9 @@ let numFrames = 0;
 
 let plinkoPlay = false;
 
+let multiplication = 2;
+let addition = 2;
+
 const PlayBoard = new Board(PLAYER_WIDTH);
 PlayBoard.checkWidthAndHeight();
 
@@ -46,30 +48,6 @@ function togglePlinko() {
 }
 
 
-
-blockSizeSlider.oninput = function() {
-    BLOCK_WIDTH = parseInt(this.value, 10);
-    document.querySelector('#block-size-value').innerHTML = BLOCK_WIDTH;
-    PlayBoard.checkWidthAndHeight() 
-    resize = true;
-    calculateNumOfBlocks(false);
-
-
-}
-
-ballSpeed.oninput = function() {
-    if (this.value !== SPEED_CONTROL) {
-        balls.forEach((x) => {
-            x.xSpeed = x.xSpeed * (175 / SPEED_CONTROL) * (this.value / 175);
-            x.ySpeed = x.ySpeed * (175 / SPEED_CONTROL) * (this.value / 175)
-            if (x.xSpeed === 0 || x.ySpeed === 0) {
-
-            }
-        })
-        SPEED_CONTROL = this.value;
-        document.querySelector('#ball-speed-value').innerHTML = SPEED_CONTROL;
-    }
-}
 
 
 

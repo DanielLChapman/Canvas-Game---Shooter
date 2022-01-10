@@ -1,4 +1,3 @@
-
 class Player {
     constructor() {
         this.width = 250;
@@ -28,24 +27,23 @@ class Player {
 
     updateShots(typeOfUpdate) {
         if (!this.fire) {
-            if (this.numShots === 0) {
-                this.numShots = 1;
-            }
-            switch(typeOfUpdate) {
-                case 'addition': 
-                    this.numShots += 2;
+            switch (typeOfUpdate) {
+                case "addition":
+                    this.numShots += addition || 2;
                     break;
-                case 'multiplication':
-                    this.numShots *= 2;
+                case "multiplication":
+                    if (this.numShots === 0) {
+                        this.numShots = 1;
+                    }
+                    this.numShots *= multiplication || 2;
                     break;
-                case 'fire':
+                case "fire":
                     this.fire = true;
                     break;
                 default:
                     console.log(typeOfUpdate);
             }
         }
-        
     }
 
     eliminate() {
@@ -61,11 +59,14 @@ class Player {
             let shot = new Ball(
                 this.lineToX,
                 this.lineToY,
-                calculateWidth(60, this.degrees) * (SPEED_CONTROL/175),
-                calculateHeight(60, this.degrees) * (SPEED_CONTROL/175),
+                calculateWidth(60, this.degrees) * (SPEED_CONTROL / 175),
+                calculateHeight(60, this.degrees) * (SPEED_CONTROL / 175),
                 this.shooterColor
             );
             balls.push(shot);
+        } else { 
+            this.numShots = 1;
+            this.shoot();
         }
     }
 
@@ -102,27 +103,24 @@ class Player {
 
     randomizeShots = (plinkoRandomize) => {
         if (!this.fire) {
-            if (this.numShots === 0) {
-                this.numShots = 1;
-                this.shootOption = 0;
-            }
-
-            if (plinkoRandomize ) {
+            if (plinkoRandomize) {
                 newParticle(random(245), 0, this.playerNum, this.shooterColor);
             } else {
                 let x = Math.floor(Math.random() * 3);
                 if (x === 0) {
-                    this.numShots *= 2;
+                    if (this.numShots === 0) {
+                        this.numShots = 1;
+                    }
+                    this.numShots *= multiplication || 2;
                     this.shootOption = 1;
                 } else if (x === 2) {
-                    this.numShots += 2;
+                    this.numShots += addition || 2;
                     this.shootOption = 2;
                 } else {
                     this.fire = true;
                     this.shootOption = 3;
                 }
             }
-            
         }
     };
 
@@ -152,7 +150,7 @@ class Player {
                 break;
             case 3:
                 this.x = 0;
-                this.y = canvas.height - this.height+35;
+                this.y = canvas.height - this.height + 35;
                 this.gui = new PlayerView(
                     this.x,
                     this.y,
@@ -163,7 +161,7 @@ class Player {
                 break;
             case 4:
                 this.x = canvas.width - this.width;
-                this.y = canvas.height - this.height+35;
+                this.y = canvas.height - this.height + 35;
                 this.gui = new PlayerView(
                     this.x,
                     this.y,
@@ -209,7 +207,6 @@ class Player {
             this.playerNum = 3;
             this.maxDegreesChange = -89.5;
             this.progression = -1;
-
         }
         if (count === 4) {
             this.x = canvas.width - this.width;

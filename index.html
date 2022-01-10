@@ -60,13 +60,29 @@
                     <input step="0.1" type="range" min="0.1" max="10" value="2" class="slider" id="gravityNum">
                 </div>
                 <button class="plinko-play" id="plinko-own-drop" onclick="ownDropChange()">Drop Your Own!</button>
+                <div id="block-size">
+                    <label for="additionValue"><span id="block-size-label">Addition:</label>
+                    <input class="num-input" type="number"  id="additionValue" name="quantity" min="1" value="2">
+                </div>
+                <div id="block-size">
+                    <label for="multiplicationValue"><span id="block-size-label">Multiplication:</label>
+                    <input class="num-input" type="number" id="multiplicationValue" name="quantity" min="1" value="2">
+                </div>
             </div>
         </section>
         <div class="victory-window">
             
         </div>
         <div class="plinko-container">
-
+            <div class="addition bottom-of-plinko" id="addition">
+                <span>+2</span>
+            </div>
+            <div class="shoot bottom-of-plinko" id="shoot">
+                <span>Fire</span>
+            </div>
+            <div class="multiply bottom-of-plinko" id="multiply">
+                <span>x2</span>
+            </div>
         </div>
         <span id="message">Browser either does not have JS enabled, the height is too small of the browser (more than 800px), or the width is too small.</span>
     </body>
