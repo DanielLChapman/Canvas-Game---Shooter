@@ -141,3 +141,12 @@ rowSlider.oninput = function () {
     windowSetup();
 };
 
+//Plinko Switch
+function togglePlinko() {
+    plinkoPlay = !plinkoPlay;
+    if (plinkoPlay) {
+        document.querySelector('.plinko-container').style.display = 'block';
+    } else {
+        document.querySelector('.plinko-container').style.display = 'none';
+    }
+}

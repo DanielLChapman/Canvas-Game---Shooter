@@ -1,4 +1,5 @@
 class Ball {
+    //Initial Values
     constructor(x, y, xSpeed, ySpeed, color) {
         this.x = x;
         this.y = y;
@@ -7,6 +8,8 @@ class Ball {
         this.color = color;
     }
 
+    //Update the X and Y
+    //If they hit the sides, redirect the direction
     update(PlayBoard) {
         this.x += this.xSpeed;
         this.y += this.ySpeed;
@@ -17,7 +20,7 @@ class Ball {
             this.ySpeed *= -1;
         }
     }
-
+    //draw
     draw() {
         ctx.fillStyle = this.color;
         ctx.beginPath();
