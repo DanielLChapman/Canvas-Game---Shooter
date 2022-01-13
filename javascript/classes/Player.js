@@ -1,4 +1,5 @@
 class Player {
+    //initial values and booleans for game options
     constructor() {
         this.width = 250;
         this.height = 300;
@@ -25,6 +26,8 @@ class Player {
         this.playerNum = 1;
     }
 
+    //Updating shots from Plinko Position.
+    //Separate from other function because it runs every second and has different properties. 
     updateShots(typeOfUpdate) {
         if (!this.fire) {
             switch (typeOfUpdate) {
@@ -46,16 +49,48 @@ class Player {
         }
     }
 
+    //randomizing the shots
+    randomizeShots = (plinkoRandomize) => {
+        if (!this.fire) {
+            //if plinko is on, we are making particles here which will then run the other shot function.
+            if (plinkoRandomize) {
+                newParticle(random(245), 0, this.playerNum, this.shooterColor);
+            } else {
+                //otherwise lets just randomize the values
+                let x = Math.floor(Math.random() * 3);
+                if (x === 0) {
+                    //incase the numShots are empty, we want to have at least one.
+                    if (this.numShots === 0) {
+                        this.numShots = 1;
+                    }
+                    this.numShots *= multiplication || 2;
+                    this.shootOption = 1;
+                } else if (x === 2) {
+                    
+                    this.numShots += addition || 2;
+                    this.shootOption = 2;
+                } else {
+                    this.fire = true;
+                    this.shootOption = 3;
+                }
+            }
+        }
+    };
+    
+    //eliminating the player
     eliminate() {
         this.canPlay = false;
     }
 
+    //Actual firing function
     shoot() {
+        //If there are shots, -1 and summon, stop the firing if this is the last ball.
         if (this.numShots > 0) {
             this.numShots -= 1;
             if (this.numShots === 0) {
                 this.fire = false;
             }
+            //new Particle based on the position of the shooter
             let shot = new Ball(
                 this.lineToX,
                 this.lineToY,
@@ -63,13 +98,16 @@ class Player {
                 calculateHeight(60, this.degrees) * (SPEED_CONTROL / 175),
                 this.shooterColor
             );
+            //Add to array
             balls.push(shot);
         } else { 
+            //Otherwise add a shot and then fire it
             this.numShots = 1;
             this.shoot();
         }
     }
 
+    //Draw and update the shooter based on the incrememnt established. 
     drawShooter() {
         let xCoord =
             this.x === 0
@@ -101,29 +139,7 @@ class Player {
         ctx.stroke();
     }
 
-    randomizeShots = (plinkoRandomize) => {
-        if (!this.fire) {
-            if (plinkoRandomize) {
-                newParticle(random(245), 0, this.playerNum, this.shooterColor);
-            } else {
-                let x = Math.floor(Math.random() * 3);
-                if (x === 0) {
-                    if (this.numShots === 0) {
-                        this.numShots = 1;
-                    }
-                    this.numShots *= multiplication || 2;
-                    this.shootOption = 1;
-                } else if (x === 2) {
-                    this.numShots += addition || 2;
-                    this.shootOption = 2;
-                } else {
-                    this.fire = true;
-                    this.shootOption = 3;
-                }
-            }
-        }
-    };
-
+    //Redraws the guis based on current position of current player
     updateGUIPosition(count) {
         switch (count) {
             case 1:
@@ -175,6 +191,8 @@ class Player {
         }
     }
 
+    //Each player has different starting values so needed a way to establish which player is which
+    //startPosition to maxDegreesChange is the angle that the shooter will fire, progression is how it starts, degrees is where it currently is.
     setPlayer = (count) => {
         if (count === 1) {
             this.x = 0;
